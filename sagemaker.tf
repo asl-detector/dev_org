@@ -14,6 +14,37 @@ resource "aws_sagemaker_domain" "main" {
   }
 }
 
+# Add permissions to allow SageMaker to directly assume the data_org cross-account access roles
+resource "aws_iam_role_policy" "sagemaker_data_lake_access" {
+  name = "assume-data-lake-clean-access-role"
+  role = aws_iam_role.sagemaker_execution_role.name
+  
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = "sts:AssumeRole"
+      # Reference the data_org role directly instead of the dev_org role
+      Resource = data.terraform_remote_state.data_org.outputs.data_lake_clean_access_role_arn
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "sagemaker_extrn_data_access" {
+  name = "assume-extrn-data-access-role"
+  role = aws_iam_role.sagemaker_execution_role.name
+  
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = "sts:AssumeRole"
+      # Reference the data_org role directly instead of the dev_org role
+      Resource = data.terraform_remote_state.data_org.outputs.extrn_data_access_role_arn
+    }]
+  })
+}
+
 # Create user profiles for data scientists
 resource "aws_sagemaker_user_profile" "data_scientists" {
   for_each          = toset(var.data_scientist_users)
