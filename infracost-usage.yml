@@ -1,0 +1,33 @@
+# This predefined usage file attempts to set each usage-based cost as
+# $5/month for common configurations, helping engineers understand that
+# these resources are not free.
+# See docs: https://infracost.io/usage-file/
+version: 0.1
+resource_type_default_usage:
+  aws_acmpca_certificate_authority:
+    monthly_requests: 6 # Monthly private certificate requests.
+  aws_alb:
+    new_connections: 2500 # Number of newly established connections per second on average.
+    active_connections: 2500 # Number of active connections per minute on average.
+    processed_bytes_gb: 250 # The number of bytes processed by the load balancer for HTTP(S) requests and responses in GB.
+    rule_evaluations: 2500 # The product of number of rules processed by the load balancer and the request rate.
+  aws_api_gateway_rest_api:
+    monthly_requests: 1437500 # Monthly requests to the Rest API Gateway.
+  aws_apigatewayv2_api:
+    monthly_requests: 5000000 # Monthly requests to the HTTP API Gateway.
+    request_size_kb: 128 # Average request size sent to the HTTP API Gateway in KB. Requests are metered in 512KB increments, maximum size is 10MB.
+    monthly_messages: 5000000 # Monthly number of messages sent to the Websocket API Gateway.
+    message_size_kb: 8 # Average size of the messages sent to the Websocket API Gateway in KB. Messages are metered in 32 KB increments, maximum size is 128KB.
+    monthly_connection_mins: 20000000 # Monthly total connection minutes to Websockets.
+  aws_s3_bucket:
+    object_tags: 5000000 # Total object tags. Only for AWS provider V3.
+    standard: # Usages of S3 Standard:
+      storage_gb: 225 # Total storage in GB.
+      monthly_tier_1_requests: 1000000 # Monthly PUT, COPY, POST, LIST requests (Tier 1).
+      monthly_tier_2_requests: 12500000 # Monthly GET, SELECT, and all other requests (Tier 2).
+      monthly_select_data_scanned_gb: 2500 # Monthly data scanned by S3 Select in GB.
+      monthly_select_data_returned_gb: 7250 # Monthly data returned by S3 Select in GB.
+  aws_sagemaker_domain:
+    storage_gb: 50 # Storage for SageMaker domain in GB
+  aws_sagemaker_user_profile:
+    monthly_usage_hours: 80 # Monthly usage hours per user profile
